@@ -1,12 +1,10 @@
 package main
 
 import (
-	"github.com/kaspar-p/go-corde/src/discord"
-
 	"github.com/spf13/viper"
 )
 
-func GetConfig() discord.Config {
+func GetConfig() Config {
 	viper.SetConfigFile(".env.yaml")
 	viper.AddConfigPath(".")
 	viper.SetConfigType("yml")
@@ -22,7 +20,7 @@ func GetConfig() discord.Config {
 	testChannel := viper.GetString("TEST_CHANNEL")
 	testingBot := viper.GetString("TESTING_BOT")
 
-	return discord.Config{
+	return Config{
 		AppId:       appId,
 		BotToken:    botToken,
 		TestChannel: testChannel,
@@ -32,7 +30,7 @@ func GetConfig() discord.Config {
 
 func main() {
 	config := GetConfig()
-	tester := discord.CreateTester(config)
+	tester := CreateTester(config)
 
 	tester.ExpectSending(".wyd <@" + config.TestingBot + ">").ToGetResponse("nothing much, wbu ;)")
 }

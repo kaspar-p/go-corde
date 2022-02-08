@@ -6,4 +6,3 @@ repos:
       - id: go-vet-repo-mod
       - id: golangci-lint-repo-mod
       - id: go-test-mod
-        args: [./src]
