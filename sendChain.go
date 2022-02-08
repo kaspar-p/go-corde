@@ -17,13 +17,14 @@ type DiscordSendChain struct {
 type ConditionFunc func(message *discordgo.MessageCreate) bool
 
 func (sendChain *DiscordSendChain) checkCondition(desc string, conditionFunc ConditionFunc, passedString string) *DiscordSendChain {
-	sendChain.session.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+	removeHandler := sendChain.session.AddHandlerOnce(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if conditionFunc(m) {
 			sendChain.returnChannel <- fmt.Sprintf("Error in assert\n\tExpected actual to %s: %s\n\tActual message: %s\n", desc, passedString, m.Content)
 		} else {
 			sendChain.returnChannel <- ""
 		}
 	})
+	defer removeHandler()
 
 	matched := <-sendChain.returnChannel
 	if matched != "" {
