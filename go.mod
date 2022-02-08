@@ -1,4 +1,4 @@
-module gourd
+module github.com/kaspar-p/gourd
 
 go 1.17
 
