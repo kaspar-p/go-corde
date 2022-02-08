@@ -1,4 +1,4 @@
-package main
+package gourd
 
 import (
 	"log"
@@ -8,11 +8,12 @@ import (
 )
 
 type SendChain interface {
-	ToGetResponse(message string)
+	ToReturn(expected string) SendChain
+	ToContain(substring string) SendChain
 }
 
 type Tester interface {
-	ExpectSending(message string) SendChain
+	ExpectSending(content string) SendChain
 }
 
 type Config struct {
@@ -22,7 +23,7 @@ type Config struct {
 	TestingBot  string
 }
 
-func CreateTester(config Config) Tester {
+func CreateTester(config Config) (tester Tester, disconnect func()) {
 	var session *discordgo.Session
 
 	c := make(chan *discordgo.Session)
@@ -38,9 +39,6 @@ func CreateTester(config Config) Tester {
 	session.AddHandler(func(s *discordgo.Session, ready *discordgo.Ready) {
 		c <- s
 	})
-	session.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
-		// ? somehow watch for changes and relay them back
-	})
 	session.Identify.Intents = discordgo.IntentsGuildMessages | discordgo.IntentsGuilds
 
 	// Open the bot
@@ -53,5 +51,10 @@ func CreateTester(config Config) Tester {
 	// Wait for async function to finish
 	session = <-c
 
-	return &DiscordTester{session: session, channelId: config.TestChannel}
+	return &DiscordTester{session: session, channelId: config.TestChannel}, func() {
+		err := session.Close()
+		if err != nil {
+			panic(errors.Wrap(err, "Error closing discord session"))
+		}
+	}
 }
