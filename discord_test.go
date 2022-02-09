@@ -1,10 +1,10 @@
 package gourd_test
 
 import (
-	"gourd"
 	"os"
 	"testing"
 
+	"github.com/kaspar-p/gourd"
 	"github.com/spf13/viper"
 )
 
@@ -51,11 +51,12 @@ func TestMain(m *testing.M) {
 }
 
 // Note that this function requires busybee-dev to be running alongside it
-func TestToReturn(t *testing.T) {
-	tester.ExpectSending(".wyd <@" + testConfig.TestingBot + ">").ToReturn("nothing much \\;)")
-	tester.ExpectSending(".wyd <@" + testConfig.TestingBot + ">").ToContain("\\;)")
+func TestToReturnSplit(t *testing.T) {
+	c := tester.ExpectSending(".wyd <@" + testConfig.TestingBot + ">")
+	c.ToReturn("nothing much \\;)")
+	c.ToNotReturn("something else? idk")
 }
 
-func TestToContain(t *testing.T) {
-	// tester.ExpectSending(".wyd <@" + testConfig.TestingBot + ">").ToContain("\\;)")
+func TestToContainInline(t *testing.T) {
+	tester.ExpectSending(".wyd <@" + testConfig.TestingBot + ">").ToContain("\\;)").ToNotContain("\\:)")
 }
