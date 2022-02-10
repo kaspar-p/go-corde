@@ -52,11 +52,15 @@ func TestMain(m *testing.M) {
 
 // Note that this function requires busybee-dev to be running alongside it
 func TestToReturnSplit(t *testing.T) {
+	t.Parallel()
+
 	c := tester.ExpectSending(".wyd <@" + testConfig.TestingBot + ">")
 	c.ToReturn("nothing much \\;)")
 	c.ToNotReturn("something else? idk")
 }
 
 func TestToContainInline(t *testing.T) {
+	t.Parallel()
+
 	tester.ExpectSending(".wyd <@" + testConfig.TestingBot + ">").ToContain("\\;)").ToNotContain("\\:)")
 }

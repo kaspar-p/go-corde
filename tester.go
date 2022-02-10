@@ -15,9 +15,10 @@ func (tester *discordTester) ExpectSending(content string) Verb {
 	asyncMessage := make(chan *discordgo.Message)
 
 	// Add the handler that listens to every message
-	tester.session.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
+	removeHandler := tester.session.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {
 		asyncMessage <- m.Message
 	})
+	defer removeHandler()
 
 	// Send the trigger to the bot
 	_, err := tester.session.ChannelMessageSend(tester.channelId, content)
