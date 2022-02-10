@@ -50,17 +50,22 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
+func TestWydTalkToBot(t *testing.T) {
+	tester.ExpectSending(".wyd <@" + testConfig.TestingBot + ">").ToReturn("nothing much \\;)")
+	tester.ExpectSending(".wyd").ToContain("@ of a user")
+}
+
+func TestWydNoArgs(t *testing.T) {
+	tester.ExpectSending(".wyd").ToContain("@ of a user \\:)")
+}
+
 // Note that this function requires busybee-dev to be running alongside it
 func TestToReturnSplit(t *testing.T) {
-	t.Parallel()
-
 	c := tester.ExpectSending(".wyd <@" + testConfig.TestingBot + ">")
 	c.ToReturn("nothing much \\;)")
 	c.ToNotReturn("something else? idk")
 }
 
 func TestToContainInline(t *testing.T) {
-	t.Parallel()
-
 	tester.ExpectSending(".wyd <@" + testConfig.TestingBot + ">").ToContain("\\;)").ToNotContain("\\:)")
 }
